@@ -23,20 +23,24 @@ class RKF78{
 private:
     static const T a[13];       // rk78 parameters
     static const T b[13][12];   // rk78 parameters
-    T h;                        // step
-    T t;                        // time
     T K[13][dim];               // runge-kutta parameters
     T R[dim];                   // error
     T y[dim];                   // position and velocity
     T z[13][dim];               // make calculation of Ks easier
-    void GetZ(int l);
+    void FindZ(int l);
     void RungeKuttaParams78();
-    void GetY();
-    T hnew(T hmax, T hmin, T q);
-    void SetY(T iny[dim]);
+    void FindY();
+
 public:
     long step;                  // step
+    T h;                        // step
+    T t;                        // time
     T (*f[dim])(T t, T y[dim]); // functions to solve
+    T* GetY();
+    T GetT(){return t;}
+    RKF78<T,dim>& SetT(T tnow){t=tnow;return *this;}
+    T hnew(T hmax, T hmin, T q);
+    RKF78<T,dim>& SetY(T iny[dim]);
     void rkf78(T hmax, T hmin,  T TOL);
     void solve(T hmax, T hmin, T y0[dim], T TOL, T begin, T end,
                const char *filename);
@@ -44,13 +48,20 @@ public:
 
 
 template<class T, int dim>
-void RKF78<T, dim>::SetY(T iny[dim])
+T* RKF78<T, dim>::GetY()
+{
+    return y;
+}
+template<class T, int dim>
+RKF78<T,dim>& RKF78<T, dim>::SetY(T iny[dim])
 {
     for(int i=0;i<dim;++i)
     {
         y[i]=iny[i];
     }
+    return *this;
 }
+
 template<class T, int dim>
 const T RKF78<T, dim>::a[13] = {
     0.0, 2.0/27.0, 1.0/9.0, 1.0/6.0, 5.0/12.0, 0.5,
@@ -84,7 +95,7 @@ const T RKF78<T, dim>::b[13][12] = {
 };
 
 template<class T, int dim>
-void RKF78<T, dim>::GetZ(int l) {
+void RKF78<T, dim>::FindZ(int l) {
     T tmp[dim];
     for (int i=0; i < dim; i++) {
         tmp[i] = 0;
@@ -105,7 +116,7 @@ template<class T, int dim>
 void RKF78<T, dim>::RungeKuttaParams78() {
     // get runge-kutta parameters
     for (int j=0; j < 13; j++) {
-        GetZ(j);
+        FindZ(j);
         for (int i=0; i < dim; i++) {
             K[j][i] = h * (*f[i])(t + h * a[j], z[j]);
         }
@@ -113,7 +124,7 @@ void RKF78<T, dim>::RungeKuttaParams78() {
 }
 
 template<class T, int dim>
-void RKF78<T, dim>::GetY() {
+void RKF78<T, dim>::FindY() {
     // get y using runge-kutta parameters
     for (int i=0; i < dim; i++) {
         y[i] += K[5][i] * 34.0 / 105.0 +
@@ -156,7 +167,7 @@ void RKF78<T, dim>::rkf78(T hmax, T hmin,
         T q=pow(TOL / (MaxErr * 2.0), 1.0 / 7.0);
         if (MaxErr < TOL) {
             t += h;
-            GetY();         // get Ys
+            FindY();         // get Ys
             break;
         }
         h = hnew(hmax, hmin, q); // new h
