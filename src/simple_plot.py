@@ -100,35 +100,6 @@ def read_two_col_bin(filename, col0, col1, header, it, dt, dc):
     y = data[::it,col1]
     return x, y
 
-# @click.group()
-# def simple_plot():
-#     pass
-
-
-# @simple_plot.command()
-# @click.option('--columns', nargs=2, default=(0, 1),
-#               help='Two columns of the data file to plot.')
-# @click.option('--del-header', default=0,
-#               help='Number of header lines to delete.')
-# @click.option('--labels', nargs=2, default=('$x$', '$y$'),
-#               help='Labels of X and Y axes.')
-# @click.option('--xlim', nargs=2, type=(float, float), default=(0, 0),
-#               help='Limit of X axis.')
-# @click.option('--ylim', nargs=2, type=(float, float), default=(0, 0),
-#               help='Limit of Y axis.')
-# @click.option('--title', default='', help='Title of the figure.')
-# @click.option('--figname', default='simple_plot',
-#               help='Name of the figure to save (default: simple_plot).')
-# @click.option('--figtype', default='eps',
-#               help='Format of the figure to save (default: eps).')
-# @click.option('--sci', is_flag=True,
-#               help='Apply scientific notation to the axes.')
-# @click.option('--equal', is_flag=True,
-#               help='Same aspect for X and Y axes.')
-# @click.option('--show', is_flag=True,
-#               help='Show the figure.')
-# @click.argument('datafile')
-
 # def plot_fig(datafile, columns, del_header, binary, datatype, count, labels, xlim, ylim,
 #              title, figname, sci, equal, show, figtype):
 def plot_fig():
