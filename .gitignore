@@ -7,6 +7,9 @@
 # Build Targets
 build/
 
+# For testing purposes
+test/
+
 # Inputs
 
 # Outputs
