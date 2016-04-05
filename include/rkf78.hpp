@@ -27,17 +27,18 @@ private:
     T R[dim];                   // error
     T y[dim];                   // position and velocity
     T z[13][dim];               // make calculation of Ks easier
+    long step;                  // step count
     void FindZ(int l);
     void RungeKuttaParams78();
     void FindY();
 
 public:
-    long step;                  // step
     T h;                        // step
     T t;                        // time
     T (*f[dim])(T t, T y[dim]); // functions to solve
     T* GetY();
     T GetT(){return t;}
+    long GetStep(){return step;}
     RKF78<T,dim>& SetT(T tnow){t=tnow;return *this;}
     T hnew(T hmax, T hmin, T q);
     RKF78<T,dim>& SetY(T iny[dim]);
@@ -168,6 +169,7 @@ void RKF78<T, dim>::rkf78(T hmax, T hmin,
         if (MaxErr < TOL) {
             t += h;
             FindY();         // get Ys
+            ++step;
             break;
         }
         h = hnew(hmax, hmin, q); // new h
