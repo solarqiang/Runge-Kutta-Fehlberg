@@ -22,7 +22,9 @@ Examples:
   $ ./simple_plot.py twobody_output.dat --show --columns 2 3 --equal \
     --del-header 1 --title 'Orbit Trace' --figname 'orbit_trace'
 """
-
+import matplotlib
+# Force matplotlib not to use any X server so as to run on servers without X
+matplotlib.use('Agg')
 from matplotlib import rc
 import numpy as np
 import matplotlib.pyplot as pl
@@ -86,6 +88,7 @@ def read_two_col(data, col0, col1, begin=0, end=None, it=1):
     y = data[begin:end:it,col1]
     return x, y
 
+# TODO: Making plot style more easily configurable
 # def plot_fig(datafile, columns, del_header, binary, datatype, count, labels, xlim, ylim,
 #              title, figname, sci, equal, show, figtype):
 def plot_fig():
@@ -97,7 +100,7 @@ def plot_fig():
         data = read_data_bin(datafile, del_header, datatype, count)
     x, y = read_two_col(data, columns[0], columns[1], step)
     pl.rc('font', family='serif')
-    pl.figure(figsize=(8, 6))
+    fig=pl.figure(figsize=(8, 6))
     pl.plot(x, y, marker='.', markersize=2.0, color='r',
             linestyle='None')
     pl.xlabel(labels[0], fontsize=16)
@@ -116,6 +119,7 @@ def plot_fig():
     pl.savefig(fig_name)
     if show:
         pl.show()
+    pl.close(fig)
 
 
 if __name__ == '__main__':
