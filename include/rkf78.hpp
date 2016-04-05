@@ -39,12 +39,14 @@ public:
     T* GetY();
     T GetT(){return t;}
     long GetStep(){return step;}
+    void ResetStep(){step=0;}
     RKF78<T,dim>& SetT(T tnow){t=tnow;return *this;}
     T hnew(T hmax, T hmin, T q);
     RKF78<T,dim>& SetY(T iny[dim]);
     void rkf78(T hmax, T hmin,  T TOL);
     void solve(T hmax, T hmin, T y0[dim], T TOL, T begin, T end,
                const char *filename);
+    RKF78<T,dim>(): step(0) {}
 };
 
 
@@ -155,8 +157,7 @@ T RKF78<T, dim>::hnew(T hmax, T hmin, T q) {
 }
 
 template<class T, int dim>
-void RKF78<T, dim>::rkf78(T hmax, T hmin, 
-                             T TOL) {
+void RKF78<T, dim>::rkf78(T hmax, T hmin, T TOL) {
     // function to apply the runge-kutta-fehlberg method for one step
      while(true) {
         RungeKuttaParams78();  // get Ks
