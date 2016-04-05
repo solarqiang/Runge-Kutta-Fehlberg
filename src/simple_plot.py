@@ -29,8 +29,9 @@ import matplotlib.pyplot as pl
 # import click
 import argparse
 
+# TODO:
+# Add input parameters for (begin,end,step)
 parser = argparse.ArgumentParser()
-
 parser.add_argument('-l','--columns',dest='columns', nargs=2, type=int, default=[0, 1],
               help='Two columns of the data file to plot.')
 parser.add_argument('--del-header',dest='del_header', type=int,  default=0,
@@ -63,31 +64,15 @@ parser.add_argument('-c','--count',dest='count', type=int, default=2,
 parser.add_argument('datafile',
         help='Input data filename')
 args = parser.parse_args()
-# TODO: Using globals().update is problematic, while remembering to write *args* **everytime** when using a cmd line argument is SO tedious. What's the best solution?
+# FIXME:
+# Using globals().update is problematic,
+# while remembering to write *args* **everytime** when using a cmd line argument is SO tedious.
+# What's the best solution?
 globals().update(vars(args))
 
-# TODO: Seperate these two processes:
-# - Reading data from file
-# - Extracting desired columns from data
-
-def read_two_col(filename, col0, col1, header,it):
-    """Read two columns of data in a file"""
-    f = open(filename, 'r')
-    if header > 0:
-        for i in range(header):
-            f.readline()
-    x = []
-    y = []
-    for line in f:
-        line = line.strip()
-        columns = line.split()
-        x.append(np.longdouble(columns[col0]))
-        y.append(np.longdouble(columns[col1]))
-    f.close()
-    return x, y
-
-
-def read_two_col_bin(filename, col0, col1, header, it, dt, dc):
+def read_data(filename, header):
+    return np.loadtxt(filename, dtype=np.longdouble, skiprows=header)
+def read_data_bin(filename, header, dt, dc):
     if dt=="float":
         ndt = np.single
     elif dt=="double":
@@ -95,9 +80,10 @@ def read_two_col_bin(filename, col0, col1, header, it, dt, dc):
     elif dt=="longdouble":
         ndt = np.longdouble
     data = np.fromfile(filename, dtype=ndt)
-    data = data.reshape(data.size/dc,dc)
-    x = data[::it,col0]
-    y = data[::it,col1]
+    return data.reshape(data.size//dc,dc)
+def read_two_col(data, col0, col1, begin=0, end=None, it=1):
+    x = data[begin:end:it,col0]
+    y = data[begin:end:it,col1]
     return x, y
 
 # def plot_fig(datafile, columns, del_header, binary, datatype, count, labels, xlim, ylim,
@@ -106,9 +92,10 @@ def plot_fig():
     """Read two columns of data from DATAFILE and plot."""
     rc('text', usetex=True)
     if not binary:
-        x, y = read_two_col(datafile, columns[0], columns[1], del_header, step)
+        data = read_data(datafile, del_header)
     else:
-        x, y = read_two_col_bin(datafile, columns[0], columns[1], del_header, step, datatype, count)
+        data = read_data_bin(datafile, del_header, datatype, count)
+    x, y = read_two_col(data, columns[0], columns[1], step)
     pl.rc('font', family='serif')
     pl.figure(figsize=(8, 6))
     pl.plot(x, y, marker='.', markersize=2.0, color='r',
