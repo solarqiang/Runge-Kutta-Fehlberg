@@ -31,8 +31,6 @@ import matplotlib.pyplot as pl
 # import click
 import argparse
 
-# TODO:
-# Add input parameters for (begin,end,step)
 parser = argparse.ArgumentParser()
 parser.add_argument('-l','--columns',dest='columns', nargs=2, type=int, default=[0, 1],
               help='Two columns of the data file to plot.')
@@ -68,11 +66,6 @@ parser.add_argument('-c','--count',dest='count', type=int, default=2,
 parser.add_argument('--datafile',dest='datafile', default='data.txt',
         help='Input data filename')
 args = parser.parse_args()
-# FIXME:
-# Using globals().update is problematic,
-# while remembering to write *args* **everytime** when using a cmd line argument is SO tedious.
-# What's the best solution?
-# globals().update(vars(args))
 
 def read_data(filename, header=None):
     return np.loadtxt(filename, dtype=np.longdouble, skiprows=header)
@@ -98,8 +91,6 @@ def get_cols(datafile, columns, del_header, begin, end, step,
         data = read_data_bin(datafile, del_header, datatype, count)
     return read_two_col(data, columns[0], columns[1], step)
 # TODO: Making plot style more easily configurable
-# def plot_fig(datafile, columns, del_header, binary, datatype, count, labels, xlim, ylim,
-#              title, figname, sci, equal, show, figtype):
 def plot_fig(x, y,
         labels=('$x$','$y$'), xlim=(0,0), ylim=(0,0), title='Figure', sci=True, equal=True, show=False,
         figname='data.txt', figtype='png'):
