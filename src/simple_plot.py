@@ -40,6 +40,8 @@ parser.add_argument('--del-header',dest='del_header', type=int,  default=0,
               help='Number of header lines to delete.')
 parser.add_argument('-i','--step',dest='step', type=int, default=1,
               help='Length of step of walking through indices')
+parser.add_argument('-p','--slice',dest='slc',nargs=2, type=int, default=(None,None),
+              help='begin and end of line')
 parser.add_argument('-lbs','--labels', dest='labels', nargs=2, default=('$x$', '$y$'),
               help='Labels of X and Y axes.')
 parser.add_argument('--xlim',dest='xlim', nargs=2, type=float, default=[0, 0],
@@ -63,18 +65,18 @@ parser.add_argument('-dt','--datatype',dest='datatype',choices=['float','double'
               help='Type of Binary data')
 parser.add_argument('-c','--count',dest='count', type=int, default=2,
               help="Dimension of for each 'line' of binary data")
-parser.add_argument('datafile',
+parser.add_argument('--datafile',dest='datafile', default='data.txt',
         help='Input data filename')
 args = parser.parse_args()
 # FIXME:
 # Using globals().update is problematic,
 # while remembering to write *args* **everytime** when using a cmd line argument is SO tedious.
 # What's the best solution?
-globals().update(vars(args))
+# globals().update(vars(args))
 
-def read_data(filename, header):
+def read_data(filename, header=None):
     return np.loadtxt(filename, dtype=np.longdouble, skiprows=header)
-def read_data_bin(filename, header, dt, dc):
+def read_data_bin(filename, dc, header=None, dt='longdouble'):
     if dt=="float":
         ndt = np.single
     elif dt=="double":
@@ -88,20 +90,24 @@ def read_two_col(data, col0, col1, begin=0, end=None, it=1):
     y = data[begin:end:it,col1]
     return x, y
 
-# TODO: Making plot style more easily configurable
-# def plot_fig(datafile, columns, del_header, binary, datatype, count, labels, xlim, ylim,
-#              title, figname, sci, equal, show, figtype):
-def plot_fig():
-    """Read two columns of data from DATAFILE and plot."""
-    rc('text', usetex=True)
+def get_cols(datafile, columns, del_header, begin, end, step,
+        binary, datatype, count):
     if not binary:
         data = read_data(datafile, del_header)
     else:
         data = read_data_bin(datafile, del_header, datatype, count)
-    x, y = read_two_col(data, columns[0], columns[1], step)
+    return read_two_col(data, columns[0], columns[1], step)
+# TODO: Making plot style more easily configurable
+# def plot_fig(datafile, columns, del_header, binary, datatype, count, labels, xlim, ylim,
+#              title, figname, sci, equal, show, figtype):
+def plot_fig(x, y,
+        labels=('$x$','$y$'), xlim=(0,0), ylim=(0,0), title='Figure', sci=True, equal=True, show=False,
+        figname='data.txt', figtype='png'):
+    """Read two columns of data from DATAFILE and plot."""
+    rc('text', usetex=True)
     pl.rc('font', family='serif')
     fig=pl.figure(figsize=(8, 6))
-    pl.plot(x, y, marker='.', markersize=2.0, color='r',
+    pl.plot(x, y, marker='.', markersize=1.0, color='r',
             linestyle='None')
     pl.xlabel(labels[0], fontsize=16)
     pl.ylabel(labels[1], fontsize=16)
@@ -123,4 +129,8 @@ def plot_fig():
 
 
 if __name__ == '__main__':
-    plot_fig()
+    x,y = get_cols(datafile=args.datafile, columns=args.columns, del_header=args.del_header,begin=args.slc[0],end=args.slc[1], step=args.step,
+            binary=args.binary, datatype=args.datatype, count=args.count)
+    plot_fig(x, y,
+            labels=args.labels, xlim=args.xlim, ylim=args.ylim, title=args.title, sci=args.sci,equal=args.equal, show=args.show,
+            figname=args.figname,  figtype=args.figtype)
