@@ -2,6 +2,7 @@
 *.dat
 *.eps
 *.pdf
+*.png
 *.xcodeproj
 
 # Build Targets
