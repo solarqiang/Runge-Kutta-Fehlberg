@@ -81,7 +81,7 @@ def plot_contour(ax, f, bbox=(-2.5, 2.5), levels=[0]):
 
 
 # parameters of Hill surface
-Hill_Surf_Miu = 0.1
+Hill_Surf_Miu = 0.5
 Hill_Surf_n = 1.0
 Hill_Surf_Cj = np.array([3.5970, 3.4667, 3.0996])
 
@@ -106,7 +106,7 @@ for i in range(3):
     plot_contour(ax1[2 * i + 1], Hill_Surf_Cj_xy(Hill_Surf_n, Hill_Surf_Miu),
                  bbox=(-2.0, 2.0), levels=[Hill_Surf_Cj[i]])
 
-fig1.suptitle('Hill Surface, $\mu{}=0.1$', fontsize=16)
+fig1.suptitle('Hill Surface, $\mu{}='+str(Hill_Surf_Miu)+'$', fontsize=16)
 fig1.savefig('hill_surf.png')
 
 
@@ -120,7 +120,7 @@ plot_contour(ax2, Hill_Surf_Cj_xy(Hill_Surf_n, Hill_Surf_Miu),
              bbox=(-2.0, 2.0), levels=levels)
 ax2.set_xlabel('$x$', fontsize=14)
 ax2.set_ylabel('$y$', fontsize=14)
-ax2.set_title('$C_{J}$ Contour, $\mu{}=0.1$', fontsize=16)
+ax2.set_title('$C_{J}$ Contour, $\mu{}='+str(Hill_Surf_Miu)+'$', fontsize=16)
 fig2.savefig('cj_contour.png')
 
 
@@ -139,7 +139,7 @@ ax3.set_xlabel('$x$')
 ax3.set_ylabel('$y$')
 ax3.set_zlabel('$log(C_{J})$')
 ax3.tick_params(labelsize=8)
-ax3.set_title('$C_{J}$ Surface, $\mu{}=0.1, z=0$', fontsize=16)
+ax3.set_title('$C_{J}$ Surface, $\mu{}='+str(Hill_Surf_Miu)+', z=0$', fontsize=16)
 ax3.dist = 12
 fig3.savefig('cj_surface.png')
 
